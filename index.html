@@ -39,14 +39,20 @@
 
         <section class="card form-card">
           <div class="field-grid">
-            <label class="field-label" for="mealName" data-i18n="mealNameLabel">Meal name</label>
-            <input id="mealName" name="mealName" type="text" placeholder="e.g. Chicken rice bowl" />
+            <label class="field-label" for="mealName">
+              <span data-i18n="mealNameLabel">Meal name</span>
+              <input id="mealName" name="mealName" type="text" placeholder="e.g. Chicken rice bowl" />
+            </label>
 
-            <label class="field-label" for="mealWeight" data-i18n="totalMealWeightLabel">Total meal weight (g)</label>
-            <input id="mealWeight" name="mealWeight" type="number" min="0" step="1" placeholder="900" />
+            <label class="field-label" for="mealWeight">
+              <span data-i18n="totalMealWeightLabel">Total meal weight (g)</span>
+              <input id="mealWeight" name="mealWeight" type="number" min="0" step="1" placeholder="900" />
+            </label>
 
-            <label class="field-label" for="portionCount" data-i18n="portionCountLabel">Number of portions</label>
-            <input id="portionCount" name="portionCount" type="number" min="1" step="1" placeholder="4" />
+            <label class="field-label" for="portionCount">
+              <span data-i18n="portionCountLabel">Number of portions</span>
+              <input id="portionCount" name="portionCount" type="number" min="1" step="1" placeholder="4" />
+            </label>
           </div>
 
           <div class="ingredients-toolbar">

@@ -32,6 +32,7 @@ const translations = {
     selectRecipe: 'Select a recipe',
     portions: 'portions',
     ingredients: 'ingredients',
+    wholeMeal: 'Whole meal',
     recipeNamePlaceholder: 'e.g. Chicken rice bowl',
     recipeCopyPlaceholder: 'Recipe copy',
     pleaseNameMeal: 'Please give the meal a name before saving.',
@@ -72,8 +73,9 @@ const translations = {
     emptyRecipeState: 'Přidejte recept a klikněte na “Spočítat porce”, aby se zobrazil rozpis.',
     noRecipesSaved: 'Ještě nebyly uloženy žádné recepty.',
     selectRecipe: 'Vyberte recept',
-    portions: 'porcí',
-    ingredients: 'ingrediencí',
+    portions: 'porce',
+    ingredients: 'ingredience',
+    wholeMeal: 'Celé jídlo',
     recipeNamePlaceholder: 'např. Kuřecí rýžový talíř',
     recipeCopyPlaceholder: 'Kopie receptu',
     pleaseNameMeal: 'Před uložením uveďte název jídla.',
@@ -302,6 +304,17 @@ function calculatePortionBreakdown(recipe) {
     }));
 }
 
+function pluralizeCount(count, singular, few, many) {
+  if (appState.language === 'cs') {
+    if (count === 1) return `${count} ${singular}`;
+    if (count >= 2 && count <= 4) return `${count} ${few}`;
+    return `${count} ${many}`;
+  }
+
+  if (count === 1) return `${count} ${singular}`;
+  return `${count} ${many}`;
+}
+
 function renderResults(recipe) {
   const breakdown = calculatePortionBreakdown(recipe);
 
@@ -311,11 +324,30 @@ function renderResults(recipe) {
     return;
   }
 
-  resultSummary.textContent = `${recipe.portions} ${t('portions')}`;
-  resultList.innerHTML = breakdown
+  const portionLabel = appState.language === 'cs'
+    ? pluralizeCount(recipe.portions, 'porce', 'porce', 'porcí')
+    : pluralizeCount(recipe.portions, 'portion', 'portions', 'portions');
+
+  resultSummary.textContent = portionLabel;
+
+  const wholeMealPerPortion = Number(recipe.totalWeight || 0) / (Number(recipe.portions) || 1);
+  const wholeMealLabel = appState.language === 'cs'
+    ? `${t('wholeMeal')} · ${formatNumber(recipe.totalWeight || 0)} g`
+    : `${t('wholeMeal')} · ${formatNumber(recipe.totalWeight || 0)} g`;
+
+  const listItems = [
+    {
+      name: wholeMealLabel,
+      perPortion: wholeMealPerPortion,
+      isWholeMeal: true,
+    },
+    ...breakdown,
+  ];
+
+  resultList.innerHTML = listItems
     .map(
       (ingredient) => `
-        <div class="result-item">
+        <div class="result-item ${ingredient.isWholeMeal ? 'whole-meal-item' : ''}">
           <span class="result-name">${escapeHtml(ingredient.name)}</span>
           <span class="result-amount">${t('gramsPerPortion', { value: formatNumber(ingredient.perPortion) })}</span>
         </div>
@@ -340,14 +372,24 @@ function renderCookbook() {
   cookbookList.innerHTML = recipes.length
     ? recipes
         .map(
-          (recipe) => `
-            <li>
-              <button type="button" class="${recipe.id === appState.loadedRecipeId ? 'is-active' : ''}" data-recipe-id="${recipe.id}">
-                <span class="recipe-name">${escapeHtml(recipe.name)}</span>
-                <span class="recipe-meta">${recipe.portions} ${t('portions')} · ${recipe.ingredients.length} ${t('ingredients')}</span>
-              </button>
-            </li>
-          `
+          (recipe) => {
+            const portionText = appState.language === 'cs'
+              ? pluralizeCount(recipe.portions, 'porce', 'porce', 'porcí')
+              : pluralizeCount(recipe.portions, 'portion', 'portions', 'portions');
+
+            const ingredientText = appState.language === 'cs'
+              ? pluralizeCount(recipe.ingredients.length, 'ingredience', 'ingredience', 'ingrediencí')
+              : pluralizeCount(recipe.ingredients.length, 'ingredient', 'ingredients', 'ingredients');
+
+            return `
+              <li>
+                <button type="button" class="${recipe.id === appState.loadedRecipeId ? 'is-active' : ''}" data-recipe-id="${recipe.id}">
+                  <span class="recipe-name">${escapeHtml(recipe.name)}</span>
+                  <span class="recipe-meta">${portionText} · ${ingredientText}</span>
+                </button>
+              </li>
+            `;
+          }
         )
         .join('')
     : `<li><div class="empty-state">${t('noRecipesSaved')}</div></li>`;
