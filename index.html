@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meal Portion Counter</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="panel-header">
+          <h2 data-i18n="cookbookTitle">Cookbook</h2>
+        </div>
+
+        <label class="field-label" for="recipeSelect" data-i18n="savedRecipesLabel">Saved recipes</label>
+        <select id="recipeSelect" aria-label="Saved recipes"></select>
+
+        <div class="sidebar-actions">
+          <button id="loadRecipeBtn" class="secondary" type="button" data-i18n="loadSelectedRecipe">Load selected recipe</button>
+          <button id="deleteRecipeBtn" class="danger" type="button" data-i18n="deleteRecipe">Delete recipe</button>
+        </div>
+
+        <ul id="cookbookList" class="recipe-list" aria-live="polite"></ul>
+      </aside>
+
+      <main class="main-panel">
+        <header class="page-header">
+          <div>
+            <p class="eyebrow" data-i18n="mealPlanner">Meal planner</p>
+            <h1 data-i18n="appTitle">Meal Portion Counter</h1>
+          </div>
+
+          <div class="language-toggle" aria-label="Language selector">
+            <button id="langEnBtn" type="button" class="lang-btn active" data-lang="en">EN</button>
+            <button id="langCsBtn" type="button" class="lang-btn" data-lang="cs">CZ</button>
+          </div>
+        </header>
+
+        <section class="card form-card">
+          <div class="field-grid">
+            <label class="field-label" for="mealName" data-i18n="mealNameLabel">Meal name</label>
+            <input id="mealName" name="mealName" type="text" placeholder="e.g. Chicken rice bowl" />
+
+            <label class="field-label" for="mealWeight" data-i18n="totalMealWeightLabel">Total meal weight (g)</label>
+            <input id="mealWeight" name="mealWeight" type="number" min="0" step="1" placeholder="900" />
+
+            <label class="field-label" for="portionCount" data-i18n="portionCountLabel">Number of portions</label>
+            <input id="portionCount" name="portionCount" type="number" min="1" step="1" placeholder="4" />
+          </div>
+
+          <div class="ingredients-toolbar">
+            <h2 data-i18n="ingredientsTitle">Ingredients</h2>
+            <button id="addIngredientBtn" type="button" class="secondary" data-i18n="addIngredient">+ Add ingredient</button>
+          </div>
+
+          <div id="ingredientList" class="ingredient-list" aria-live="polite"></div>
+
+          <div class="action-row">
+            <button id="calculateBtn" type="button" data-i18n="calculatePortions">Calculate portions</button>
+            <button id="saveRecipeBtn" type="button" class="primary" data-i18n="saveRecipe">Save recipe</button>
+            <button id="newMealBtn" type="button" class="secondary" data-i18n="newMeal">New meal</button>
+          </div>
+        </section>
+
+        <section class="card results-card">
+          <div class="results-header">
+            <h2 data-i18n="perPortionBreakdown">Per-portion breakdown</h2>
+            <span id="resultSummary" class="result-summary"></span>
+          </div>
+          <div id="resultList" class="result-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="recipeModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <h3 id="modalTitle" data-i18n="ingredientChangesDetected">Ingredient changes detected</h3>
+        <p id="modalText" data-i18n="ingredientListChangedText">
+          The ingredient list has changed. You can save it as a new recipe or overwrite the existing one.
+        </p>
+
+        <label class="field-label" for="newRecipeName" data-i18n="newRecipeNameLabel">New recipe name</label>
+        <input id="newRecipeName" type="text" placeholder="Recipe copy" />
+
+        <div class="modal-actions">
+          <button id="saveAsNewBtn" type="button" class="primary" data-i18n="saveAsNewRecipe">Save as new recipe</button>
+          <button id="overwriteBtn" type="button" data-i18n="overwriteExistingRecipe">Overwrite existing recipe</button>
+          <button id="cancelModalBtn" type="button" class="secondary" data-i18n="cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
