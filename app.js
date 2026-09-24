@@ -8,6 +8,7 @@ const translations = {
     loadSelectedRecipe: 'Load selected recipe',
     deleteRecipe: 'Delete recipe',
     mealPlanner: 'Meal planner',
+    languageSelector: 'Language selector',
     appTitle: 'Meal Portion Counter',
     mealNameLabel: 'Meal name',
     totalMealWeightLabel: 'Total meal weight (g)',
@@ -35,6 +36,8 @@ const translations = {
     wholeMeal: 'Whole meal',
     recipeNamePlaceholder: 'e.g. Chicken rice bowl',
     recipeCopyPlaceholder: 'Recipe copy',
+    recipeCopyWord: 'copy',
+    recipeDefaultName: 'Recipe',
     pleaseNameMeal: 'Please give the meal a name before saving.',
     promptDeleteRecipe: 'Delete "{name}" from the cookbook?',
     selectRecipeToDelete: 'Select a recipe to delete first.',
@@ -42,6 +45,7 @@ const translations = {
     gramsPerPortion: '{value} g / portion',
     ingredientNameHint: 'Ingredient',
     ingredientWeightHint: 'Weight (g)',
+    removeIngredient: 'Remove',
     port: 'portion',
     notAvailable: 'N/A',
   },
@@ -51,6 +55,7 @@ const translations = {
     loadSelectedRecipe: 'Načíst vybraný recept',
     deleteRecipe: 'Odstranit recept',
     mealPlanner: 'Plánovač jídel',
+    languageSelector: 'Výběr jazyka',
     appTitle: 'Počítadlo porcí jídel',
     mealNameLabel: 'Název jídla',
     totalMealWeightLabel: 'Celková hmotnost jídla (g)',
@@ -78,6 +83,8 @@ const translations = {
     wholeMeal: 'Celé jídlo',
     recipeNamePlaceholder: 'např. Kuřecí rýžový talíř',
     recipeCopyPlaceholder: 'Kopie receptu',
+    recipeCopyWord: 'kopie',
+    recipeDefaultName: 'Recept',
     pleaseNameMeal: 'Před uložením uveďte název jídla.',
     promptDeleteRecipe: 'Odstranit "{name}" z kuchařky?',
     selectRecipeToDelete: 'Nejprve vyberte recept k odstranění.',
@@ -85,6 +92,7 @@ const translations = {
     gramsPerPortion: '{value} g / porci',
     ingredientNameHint: 'Ingredience',
     ingredientWeightHint: 'Hmotnost (g)',
+    removeIngredient: 'Odstranit',
     port: 'porce',
     notAvailable: 'N/A',
   },
@@ -165,6 +173,19 @@ function applyLanguage() {
     }
   });
 
+  const toggle = document.querySelector('.language-toggle');
+  if (toggle) {
+    toggle.setAttribute('aria-label', t('languageSelector'));
+  }
+
+  if (recipeSelect) {
+    recipeSelect.setAttribute('aria-label', t('savedRecipesLabel'));
+  }
+
+  document.querySelectorAll('.remove-row').forEach((button) => {
+    button.textContent = t('removeIngredient');
+  });
+
   const currentLang = appState.language;
   langButtons.forEach((button) => {
     const isActive = button.dataset.lang === currentLang;
@@ -192,6 +213,9 @@ function applyLanguage() {
     if (recipe) {
       renderResults(recipe);
     }
+  } else {
+    const currentForm = buildRecipeFromForm();
+    renderResults(currentForm);
   }
 
   renderCookbook();
@@ -221,7 +245,7 @@ function makeIngredientRow(data = {}) {
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.className = 'remove-row';
-  removeBtn.textContent = appState.language === 'cs' ? 'Odstranit' : 'Remove';
+  removeBtn.textContent = t('removeIngredient');
   removeBtn.addEventListener('click', () => {
     if (ingredientList.children.length > 1) {
       row.remove();
@@ -453,7 +477,7 @@ function escapeHtml(value) {
 function openConflictModal(existingRecipe, editedRecipe) {
   appState.pendingConflict = { existingRecipe, editedRecipe };
   modalText.textContent = t('modalPrompt', { name: existingRecipe.name });
-  newRecipeNameInput.value = `${editedRecipe.name || existingRecipe.name} ${appState.language === 'cs' ? 'kopie' : 'copy'}`;
+  newRecipeNameInput.value = `${editedRecipe.name || existingRecipe.name} ${t('recipeCopyWord')}`;
   modal.classList.remove('hidden');
   modal.setAttribute('aria-hidden', 'false');
 }
@@ -537,7 +561,7 @@ function handleSaveAsNew() {
 
   const { editedRecipe } = appState.pendingConflict;
   const requestedName = newRecipeNameInput.value.trim();
-  const finalName = requestedName || `${editedRecipe.name || 'Recipe'} copy`;
+  const finalName = requestedName || `${editedRecipe.name || t('recipeDefaultName')} ${t('recipeCopyWord')}`;
 
   const recipeToSave = {
     ...editedRecipe,
